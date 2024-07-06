@@ -1,0 +1,59 @@
+---
+title: "Datos Anómalos"
+author: "Paúl Arévalo"
+date: "2024-07-04"
+output: 
+  pdf_document:
+    extra_dependencies: ["fvextra"]
+    includes:
+      in_header: header.tex
+---
+
+# Datos Atípicos
+
+## Ejemplo
+
+A continuación se genera un conjunto de datos con valores atípicos
+
+```{r}
+set.seed(12345)
+# Generar distribución normal con media 50 y desviación estándar 10
+datos <- rnorm(10000, mean = 50, sd = 10)
+# Introducir valores atípicos
+for (i in 1:100) {
+  index <- sample.int(length(datos), 1)
+  datos[index] <- datos[index] + runif(n = 1, min = -50, max = 50)
+}
+```
+
+Realizamos una análisis exploratorio de datos:
+
+```{r}
+# Observar la distribución de los datos
+summary(datos)
+```
+
+```{r}
+hist(datos)
+```
+
+```{r}
+boxplot(datos)
+```
+
+Procedemos a detectar valores atípicos
+
+```{r}
+# Utilizar el método IQR (Rango intercuartílico)
+iqr <- IQR(datos)
+limite_superior <- median(datos) + 1.5 * iqr
+limite_inferior <- median(datos) - 1.5 * iqr
+outliers <- datos[datos > limite_superior | datos < limite_inferior]
+# Identificar outliers en el histograma
+hist(datos, col = ifelse(is.na(outliers), "lightblue", "red"))
+```
+
+```{r}
+plot(datos, main = "Diagrama de dispersión con outliers")
+points(outliers, col = "red", pch = 16, cex = 2)
+```
