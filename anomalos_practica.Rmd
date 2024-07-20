@@ -1,0 +1,115 @@
+---
+title: "Datos Anómalos"
+author: "Paúl Arévalo"
+date: "2024-07-04"
+output: 
+  pdf_document:
+    extra_dependencies: ["fvextra"]
+    includes:
+      in_header: header.tex
+---
+
+# Datos Atípicos
+
+## Ejemplo
+
+```{r}
+datos_bivariados <- read.csv("DatosBivariados.csv")
+mean_pesos <- mean(datos_bivariados$Peso)
+sd_pesos <- sd(datos_bivariados$Peso)
+mean_alturas <- mean(datos_bivariados$Altura)
+sd_alturas <- sd(datos_bivariados$Altura)
+```
+
+A continuación se genera un conjunto de datos con valores atípicos
+
+```{r}
+# set.seed(12345)
+# Generar distribución normal con media 50 y desviación estándar 10
+pesos <- rnorm(10000, mean = mean_pesos, sd = sd_pesos)
+alturas <- rnorm(10000, mean = mean_alturas, sd = sd_alturas)
+# Introducir valores atípicos
+for (i in 1:100) {
+  index <- sample.int(length(pesos), 1)
+  pesos[index] <- pesos[index] + round(runif(
+    n = 1,
+    min = -min(pesos[index] - sd_pesos, sd_pesos + mean_pesos / 2),
+    max = sd_pesos + mean_pesos / 2
+  ), 0)
+}
+for (i in 1:100) {
+  index <- sample.int(length(alturas), 1)
+  alturas[index] <- alturas[index] + round(runif(
+    n = 1,
+    min = -min(alturas[index] - sd_alturas, sd_alturas + mean_alturas / 2),
+    max = sd_alturas + mean_alturas / 2
+  ), 0)
+}
+```
+
+Realizamos una análisis exploratorio de datos:
+
+### Pesos:
+
+```{r}
+# Observar la distribución de los datos
+summary(pesos)
+```
+
+```{r}
+hist(pesos)
+```
+
+```{r}
+boxplot(pesos)
+```
+
+### Alturas
+
+```{r}
+# Observar la distribución de los datos
+summary(alturas)
+```
+
+```{r}
+hist(alturas)
+```
+
+```{r}
+boxplot(alturas)
+```
+
+Procedemos a detectar valores atípicos
+
+### Pesos
+```{r}
+# Utilizar el método IQR (Rango intercuartílico)
+iqr <- IQR(pesos)
+limite_superior <- median(pesos) + 1.5 * iqr
+limite_inferior <- median(pesos) - 1.5 * iqr
+outliers <- pesos[pesos > limite_superior | pesos < limite_inferior]
+# Identificar outliers en el histograma
+hist(pesos, col = ifelse(is.na(outliers), "lightblue", "red"))
+```
+
+```{r}
+plot(pesos, main = "Diagrama de dispersión con outliers")
+points(outliers, col = "red", pch = 16, cex = 2)
+```
+
+### Alturas
+
+```{r}
+# Utilizar el método IQR (Rango intercuartílico)
+iqr <- IQR(alturas)
+limite_superior <- median(alturas) + 1.5 * iqr
+limite_inferior <- median(alturas) - 1.5 * iqr
+outliers <- alturas[alturas > limite_superior | alturas < limite_inferior]
+# Identificar outliers en el histograma
+hist(alturas, col = ifelse(is.na(outliers), "lightblue", "red"))
+```
+
+```{r}
+plot(alturas, main = "Diagrama de dispersión con outliers")
+points(outliers, col = "red", pch = 16, cex = 2)
+```

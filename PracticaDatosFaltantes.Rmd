@@ -1,0 +1,111 @@
+---
+title: "Datos Faltantes"
+author: "Paul Arevalo, Esteban Vizhñay"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Generar distribución normal con media 50 y desviación estándar 10
+pesos <- rnorm(100, mean = 68.5, sd = 7.5)
+alturas <- rnorm(100, mean = 167.9, sd = 6.56)
+# Introducir valores atípicos
+for (i in 1:20) {
+  index <- sample.int(length(pesos), 1)
+  pesos[index] <- pesos[index] + runif(n = 1, min = 0, max = 50)
+}
+for (i in 1:20) {
+  index <- sample.int(length(alturas), 1)
+  alturas[index] <- alturas[index] + runif(n = 1, min = 0, max = 50)
+}
+```
+
+## Análisis univariable
+
+```{r}
+hist(pesos)
+```
+
+```{r}
+hist(alturas)
+```
+
+```{r}
+
+boxplot(pesos)
+
+
+```
+
+```{r}
+boxplot(alturas)
+```
+
+```{r}
+# Utilizar el método IQR (Rango intercuartílico)
+iqr <- IQR(pesos)
+limite_superior_p <- median(pesos) + 1.5 * iqr
+limite_inferior_p <- median(pesos) - 1.5 * iqr
+outliers_p <- pesos[pesos > limite_superior_p | pesos < limite_inferior_p]
+```
+
+```{r}
+print(paste("[", limite_inferior_p, ",", limite_superior_p, "]")) 
+```
+
+```{r}
+outliers_p
+```
+
+```{r}
+# Utilizar el método IQR (Rango intercuartílico)
+iqr <- IQR(alturas)
+limite_superior_a <- median(alturas) + 1.5 * iqr
+limite_inferior_a <- median(alturas) - 1.5 * iqr
+outliers_a <- alturas[alturas > limite_superior_a | alturas < limite_inferior_a]
+```
+
+```{r}
+print(paste("[", limite_inferior_a, ",", limite_superior_a, "]"))
+```
+
+```{r}
+outliers_a
+```
+
+```{r}
+plot(pesos, main = "Diagrama de dispersión pesos con outliers")
+points(outliers_p, col = "red", pch = 16,cex = 2)
+
+```
+
+```{r}
+plot(alturas, main = "Diagrama de dispersión alturas con outliers")
+points(outliers_a, col = "red", pch = 16,cex = 2)
+
+```
+
+## Análisis Bivariable
+
+```{r}
+conjunto = cbind(pesos, alturas)
+head(conjunto)
+```
+
+```{r}
+# Importar librerías
+library(tidyverse)
+# Gráfico de dispersión
+ggplot(conjunto, aes(x = pesos, y = alturas)) +
+  geom_point() +
+  geom_point(data = subset(conjunto, pesos %in% outliers_p), 
+             aes(x = pesos, y = alturas), color = "red") +  # Pesos
+   geom_point(data = subset(conjunto, alturas %in% outliers_a), 
+             aes(x = pesos, y = alturas), color = "blue") +  # Pesos
+labs(title = "Relación entre Peso y Altura",
+x = "Peso (kg)", y = "Altura (cm)")
+```

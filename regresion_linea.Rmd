@@ -1,0 +1,147 @@
+---
+title: "Regresión Lineal Simple"
+author: "Paúl Arévalo"
+date: "2024-07-04"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    extra_dependencies: ["fvextra"]
+    includes:
+      in_header: header.tex
+---
+
+# Data Set
+
+El siguiente conjunto de datos se utilizará en todo el proceso, en donde, x es la variable de entrada y y la
+variable de salida que se intentará predecir.
+
+```{r}
+x <- c(1, 2, 4, 3, 5)
+y <- c(1, 3, 3, 2, 5)
+```
+
+# Gráfica inicial
+
+A continuación se muestra en un gráfico los datos x versus y
+
+```{r}
+plot(x, y, col = "red", main = "Datos Originales")
+```
+
+# Regresión Lineal Simple
+
+La fórmula para la regresión lineal se define como: y = β0 + β1x donde β0 (intersección) y β1 (pendiente) son
+los coeficientes a estimar.
+
+La estimación de β1 se define como:
+
+La estimación de β0 se define como:
+
+## Estimando la pendiente β1
+
+Primeramente se necesita calcular las medias de x y y
+
+```{r}
+media_x <- mean(x)
+media_y <- mean(y)
+```
+
+Ahora se calcula el error de cada variable con respecto a la media xi - x̄ y yi - ȳ, se multiplican y se realiza
+la sumatoria. Además se calcula el denominador.
+
+```{r}
+error_x <- x - media_x
+error_x
+```
+
+```{r}
+error_y <- y - media_y
+error_y
+```
+
+```{r}
+multiplicacion <- error_x * error_y
+multiplicacion
+```
+
+```{r}
+numerador <- sum(multiplicacion)
+numerador
+```
+
+```{r}
+denominador <- sum(error_x^2)
+denominador
+```
+
+```{r}
+beta1 <- numerador / denominador
+beta1
+```
+
+Por lo tanto β1 = 8 / 10 = 0.8
+
+## Estimando la intercción β0
+
+Procedemos a calcular β0 = ȳ - β1 x
+
+```{r}
+beta0 <- media_y - beta1 * media_x
+beta0
+```
+
+## Realizando predicciones
+
+Calculados los coeficientes de la regresión lineal, la ecuación Y = β0 + β1 x queda de la siguiente manera: y =
+0.4 + 0.8 x, la predicción con los datos originales es:
+
+```{r}
+x
+```
+
+```{r}
+prediccion_y <- beta0 + beta1 * x
+prediccion_y
+```
+
+A continuación una gráfica de los datos originales y la recta de regresión
+
+```{r}
+plot(x, y, col = "red", main = "Datos Originales/Regresión")
+abline(beta0, beta1, lty = 2, col = 3)
+```
+
+## Estimación del Error
+
+Se puede calcular el error de las predicciones a través de el error cuadrático medio (Root Mean Squared Error
+- RMSE), definido como: 
+
+```{r}
+prediccion_y
+```
+
+```{r}
+y
+```
+
+```{r}
+error_prediccion <- prediccion_y - y
+error_prediccion
+```
+
+```{r}
+squared_error <- error_prediccion^2
+squared_error
+```
+
+```{r}
+suma_error <- sum(squared_error)
+suma_error
+```
+
+```{r}
+RMSE <- sqrt(suma_error / length(x))
+RMSE
+```
+
+Por lo tanto, cada predicción en promedio es incorrecta en aproximadamente 0.6928203

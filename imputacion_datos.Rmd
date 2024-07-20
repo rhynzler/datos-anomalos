@@ -1,0 +1,11 @@
+---
+title: "Datos Anómalos"
+author: "Paúl Arévalo"
+date: "2024-07-04"
+output: 
+  pdf_document:
+    extra_dependencies: ["fvextra"]
+    includes:
+      in_header: header.tex
+---
+
